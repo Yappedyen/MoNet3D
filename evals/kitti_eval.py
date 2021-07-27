@@ -17,12 +17,12 @@ import numpy as np
 
 import tensorflow as tf
 
-import utils.train_utils
+import include.utils.train_utils
 import time
 
 import random
 
-from utils.annolist import AnnotationLib as AnnLib
+from include.utils.annolist import AnnotationLib as AnnLib
 
 import logging
 
@@ -116,10 +116,9 @@ def evaluate(hypes, sess, image_pl, calib_pl, xy_scale_pl, softmax):
 
 def get_results(hypes, sess, image_pl, calib_pl, xy_scale_pl, decoded_logits, validation=True):
 
-   
     pred_boxes = decoded_logits['pred_boxes_new']
    
-    #pred_boxes = decoded_logits['pred_bbox_proj']
+    # pred_boxes = decoded_logits['pred_bbox_proj']
     pred_depths = decoded_logits['pred_depths_new']
     pred_locations = decoded_logits['pred_locations_new']
     pred_confidences = decoded_logits['pred_confidences']
@@ -198,17 +197,17 @@ def get_results(hypes, sess, image_pl, calib_pl, xy_scale_pl, decoded_logits, va
 
         pred_anno = AnnLib.Annotation()
         pred_anno.imageName = image_file
-        new_img, rects = utils.train_utils.add_rectangles(
+        new_img, rects = include.utils.train_utils.add_rectangles(
             hypes, [img], np_pred_confidences,
             np_pred_boxes, np_pred_depths, np_pred_locations, 
             np_pred_corners, show_removed=False,
             use_stitching=True, rnn_len=hypes['rnn_len'],
             min_conf=0.50, tau=hypes['tau'], color_acc=(0, 255, 0))
 
-        if validation and i % 15 == 0:
-            image_name = os.path.basename(pred_anno.imageName)
-            image_name = os.path.join(img_dir, image_name)
-            #scp.misc.imsave(image_name, new_img)
+        # if validation and i % 15 == 0:
+        #     image_name = os.path.basename(pred_anno.imageName)
+        #     image_name = os.path.join(img_dir, image_name)
+        #     # scp.misc.imsave(image_name, new_img)
 
         if validation:
             image_name = os.path.basename(pred_anno.imageName)
@@ -223,7 +222,7 @@ def get_results(hypes, sess, image_pl, calib_pl, xy_scale_pl, decoded_logits, va
             rect.calib = calib
 
         pred_anno.rects = rects
-        pred_anno = utils.train_utils.rescale_boxes((
+        pred_anno = include.utils.train_utils.rescale_boxes((
             hypes["image_height"],
             hypes["image_width"]),
             pred_anno, orig_img.shape[0],
@@ -234,14 +233,14 @@ def get_results(hypes, sess, image_pl, calib_pl, xy_scale_pl, decoded_logits, va
         pred_annolist.append(pred_anno)
 
     start_time = time.time()
-    for i in xrange(100):
-        (np_pred_boxes, np_pred_confidence, np_pred_depths, np_pred_locations) = \
+    for i in range(100):
+        (np_pred_boxes, np_pred_confidences, np_pred_depths, np_pred_locations) = \
          sess.run([pred_boxes, pred_confidences, pred_depths, pred_locations], feed_dict=feed)
     dt = (time.time() - start_time)/100
 
     start_time = time.time()
-    for i in xrange(100):
-        utils.train_utils.compute_rectangels(
+    for i in range(100):
+        include.utils.train_utils.compute_rectangels(
             hypes, np_pred_confidences,
             np_pred_boxes, np_pred_depths, np_pred_locations, show_removed=False,
             use_stitching=True, rnn_len=hypes['rnn_len'],

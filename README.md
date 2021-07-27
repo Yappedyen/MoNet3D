@@ -4,9 +4,9 @@
 <img src="https://raw.githubusercontent.com/CQUlearningsystemgroup/YicongPeng/master/demo.jpg">
 
 ### Prerequisites
-- Ubuntu 16.04
+- Ubuntu 18.04
 - Python 3.6
-- Tensorflow 1.10.0
+- Tensorflow 1.12.0
 
 ### Install
 

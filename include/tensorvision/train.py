@@ -32,8 +32,8 @@ import tensorflow as tf
 
 import string
 
-import tensorvision.utils as utils
-import tensorvision.core as core
+import include.tensorvision.utils as utils
+import include.tensorvision.core as core
 from tensorflow.python import pywrap_tensorflow
 
 flags = tf.app.flags
@@ -201,8 +201,6 @@ class MedianSmoother():
         return [np.median(w[-self.num:]) for w in self.weights]
 
 
-
-
 def run_evaling(hypes, modules, tv_graph, tv_sess, start_step=0):
     """Run one iteration of training."""
     # Unpack operations for later use
@@ -218,7 +216,7 @@ def run_evaling(hypes, modules, tv_graph, tv_sess, start_step=0):
     save_iter = hypes['logging']['save_iter']
     image_iter = hypes['logging'].get('image_iter', 5 * save_iter)
     py_smoother = MedianSmoother(20)
-    step=0
+    step = 0
 
     # Run the training Step
 
@@ -227,25 +225,20 @@ def run_evaling(hypes, modules, tv_graph, tv_sess, start_step=0):
     eval_dict, images = modules['eval'].evaluate(
                 hypes, sess, tv_graph['image_pl'], tv_graph['calib_pl'], tv_graph['xy_scale_pl'], tv_graph['inf_out'])
 
-    #_write_images_to_summary(images, summary_writer, step)
+    # _write_images_to_summary(images, summary_writer, step)
     logging.info("Evaluation Finished. All results will be saved to:")
     logging.info(hypes['dirs']['output_dir'])
 
-
-
     logging.info('Raw Results:')
     utils.print_eval_dict(eval_dict, prefix='(raw)   ')
-    _write_eval_dict_to_summary(eval_dict, 'Evaluation/raw',
-                                        summary_writer, step)
+    _write_eval_dict_to_summary(eval_dict, 'Evaluation/raw', summary_writer, step)
 
     logging.info('Smooth Results:')
     names, res = zip(*eval_dict)
     smoothed = py_smoother.update_weights(res)
     eval_dict = zip(names, smoothed)
     utils.print_eval_dict(eval_dict, prefix='(smooth)')
-    _write_eval_dict_to_summary(eval_dict, 'Evaluation/smoothed',summary_writer, step)
-
-
+    _write_eval_dict_to_summary(eval_dict, 'Evaluation/smoothed', summary_writer, step)
 
 
 def _print_training_status(hypes, step, loss_value, start_time, lr):
@@ -264,6 +257,8 @@ def _print_training_status(hypes, step, loss_value, start_time, lr):
                                  sec_per_batch=sec_per_batch,
                                  examples_per_sec=examples_per_sec)
                  )
+
+
 def do_evaling(hypes):
     """
     eval model for a number of steps.
@@ -289,7 +284,6 @@ def do_evaling(hypes):
         with tf.name_scope("Queues"):
             queue = modules['input'].create_queues(hypes, 'train')
 
-
         tv_graph = core.build_training_graph(hypes, queue, modules)
 
         # prepaire the tv session
@@ -312,9 +306,8 @@ def do_evaling(hypes):
         all_variables = tf.get_collection_ref(tf.GraphKeys.GLOBAL_VARIABLES)
         sess.run(tf.variables_initializer(all_variables))
 
-
         # Start the data load
-        modules['input'].start_enqueuing_threads(hypes, queue, 'train', sess)
+        # modules['input'].start_enqueuing_threads(hypes, queue, 'train', sess)
         saver = tf.train.Saver()
         print("Reading checkpoints...")
         ckpt = tf.train.get_checkpoint_state(hypes["dirs"]["ckpt_dir"])
@@ -322,7 +315,6 @@ def do_evaling(hypes):
             global_step = ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1]
             saver.restore(sess, ckpt.model_checkpoint_path)
             print('Loading success, global_step is %s' % global_step)
-
 
         # And then after everything is built, start the training loop.
         run_evaling(hypes, modules, tv_graph, tv_sess)

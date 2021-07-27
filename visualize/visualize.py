@@ -117,8 +117,6 @@ for i,index in enumerate(show_indices):
         corners = get_corners(dim, loc, rot)
         draw_space(corners, ax, 'orange')
 
-
-
     point_cloud = read_lidar(data_label['lidar_path'],data_label['lidar_to_camera'])
 
     plt.savefig('./{}_scan'.format(index))

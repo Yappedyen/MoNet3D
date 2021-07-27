@@ -17,7 +17,7 @@ import numpy as np
 import scipy as scp
 import scipy.misc
 import matplotlib.pyplot as plt
-from scipy.misc import imread, imresize
+# from scipy.misc import imread, imresize
 from skimage.util import random_noise
 from skimage.filters import gaussian
 from skimage.exposure import rescale_intensity
@@ -25,9 +25,9 @@ from skimage.exposure import rescale_intensity
 
 import tensorflow as tf
 
-from utils.data_utils import (annotation_jitter, annotation_to_h5)
-from utils.annolist import AnnotationLib as AnnoLib
-from utils.rect import Rect
+from include.utils.data_utils import (annotation_jitter, annotation_to_h5)
+from include.utils.annolist import AnnotationLib as AnnoLib
+from include.utils.rect import Rect
 
 import threading
 
@@ -259,9 +259,7 @@ def _load_kitti_txt(kitti_txt, hypes, jitter=False, random_shuffel=True):
             anno = _rescale_boxes(im.shape, anno,
                                           hypes["image_height"],
                                           hypes["image_width"])
-            im = imresize(
-                    im, (hypes["image_height"], hypes["image_width"]),
-                    interp='cubic')
+            im = scipy.misc.imresize(im, (hypes["image_height"], hypes["image_width"]), interp='cubic')
 
        
             pos_list = [rect for rect in anno.rects if rect.classID == 1]
@@ -369,7 +367,7 @@ def start_enqueuing_threads(hypes, q, phase, sess):
                           jitter={'train': hypes['solver']['use_jitter'],
                                   'val': False}[phase])
 
-    data = gen.next()
+    data = next(gen)
     sess.run(enqueue_op, feed_dict=make_feed(data))
     t = threading.Thread(target=thread_loop,
                          args=(sess, enqueue_op, gen))

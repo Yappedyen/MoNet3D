@@ -207,12 +207,7 @@ def load_modules_from_logdir(logdir, dirname="model_files", postfix=""):
 
     f = os.path.join(model_dir, "eval.py")
     eva = imp.load_source("evaluator_%s" % postfix, f)
-    modules = {}
-    modules['input'] = data_input
-    modules['arch'] = arch
-    modules['objective'] = objective
-    modules['solver'] = solver
-    modules['eval'] = eva
+    modules = {'input': data_input, 'arch': arch, 'objective': objective, 'solver': solver, 'eval': eva}
 
     return modules
 
@@ -530,7 +525,7 @@ def get_color2class(hypes):
                                      hypes['classes'][i]['name']))
                 default_class = i
             else:
-                if isinstance(color, basestring):
+                if isinstance(color, str):
                     if not color.startswith('#'):
                         logging.error("Colors have to start with '#'. "
                                       "It was '%s'." % color)

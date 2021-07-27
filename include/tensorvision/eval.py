@@ -11,7 +11,7 @@ import logging
 import sys
 import imp
 
-import tensorvision.utils as utils
+import include.tensorvision.utils as utils
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
@@ -105,6 +105,7 @@ def main(_):
     """Orchestrate the evaluation of a model in the default training dir."""
     train_dir = utils.get_train_dir()
     evaluate(train_dir)
+
 
 if __name__ == '__main__':
     tf.app.run()

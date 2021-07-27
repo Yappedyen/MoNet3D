@@ -12,7 +12,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-import tensorvision.utils as utils
+import include.tensorvision.utils as utils
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS
@@ -74,7 +74,6 @@ def build_training_graph(hypes, queue, modules):
     encoder = modules['arch']
     objective = modules['objective']
     optimizer = modules['solver']
-
 
     # Add Input Producers to the Graph
     with tf.name_scope("Inputs"):

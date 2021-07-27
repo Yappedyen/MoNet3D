@@ -35,7 +35,7 @@ class FCN8VGG:
             logging.error(("File {} not found".format(vgg16_npy_path)))
             sys.exit(1)
         with open(vgg16_npy_path, 'rb') as file:
-            self.data_dict = pickle.load(file)#, encoding='latin1')
+            self.data_dict = pickle.load(file, encoding='latin1') #, encoding='latin1')
         self.wd = 1e-5
         print("pkl file loaded")
 

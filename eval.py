@@ -30,8 +30,8 @@ FLAGS = flags.FLAGS
 
 sys.path.insert(1, 'include')
 
-import tensorvision.train as train
-import tensorvision.utils as utils
+import include.tensorvision.train as train
+import include.tensorvision.utils as utils
 
 flags.DEFINE_string('name', None,
                     'Append a name Tag to run.')
@@ -49,9 +49,10 @@ tf.app.flags.DEFINE_boolean(
 flags.DEFINE_string('logdir', 'outputs/kittiBox',
                     'logdirs.')
 
+
 def main(_):
-    #utils.set_gpus_to_use()
-    gpus = '1' if FLAGS.gpus == None else FLAGS.gpus
+    # utils.set_gpus_to_use()
+    gpus = '0' if FLAGS.gpus is None else FLAGS.gpus
     logging.info("GPUs are set to: %s", gpus)
     os.environ['CUDA_VISIBLE_DEVICES'] = gpus
 
@@ -66,20 +67,19 @@ def main(_):
     with open(tf.app.flags.FLAGS.hypes, 'r') as f:
         logging.info("f: %s", f)
         hypes = json.load(f)
-    #utils.load_plugins()
+    # utils.load_plugins()
 
     if 'TV_DIR_RUNS' in os.environ:
         os.environ['TV_DIR_RUNS'] = os.path.join(os.environ['TV_DIR_RUNS'],
                                                  'KittiBox')
     utils.set_dirs(hypes, tf.app.flags.FLAGS.hypes)
-
     utils._add_paths_to_sys(hypes)
-
     logging.info("Initialize training folder")
     train.initialize_training_folder(hypes)
-    #train.maybe_download_and_extract(hypes)
+    # train.maybe_download_and_extract(hypes)
     logging.info("Start evaling")
     train.do_evaling(hypes)
+
 
 if __name__ == '__main__':
     tf.app.run()
